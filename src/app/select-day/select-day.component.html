@@ -1,0 +1,45 @@
+<div fxLayout="column" fxLayoutGap="25px">
+  <mat-card>
+    <mat-card-title>Select a Location</mat-card-title>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-select [(value)]="locationIndex" (selectionChange)="locationChange()">
+          <mat-option value="not selected"></mat-option>
+          <mat-option *ngFor="let location of locations" value="{{location}}">{{location}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      <a style="float:right" href="/admin"><mat-icon>date_range</mat-icon></a>
+    </mat-card-content>
+  </mat-card>
+  <mat-card *ngIf="locationIndex !== 'not selected'">
+      <mat-card-title>Select a Date</mat-card-title>
+      <mat-card-content>
+        <div fxLayout="row" fxLayoutGap="25px" fxLayoutAlign="center stretch">
+          <div *ngFor="let date of dates; let index = index;">
+            <div>
+              <div class="select-day{{(date.times.length === 0) ? '-disabled' : ''}}" fxLayout="column" fxLayoutAlign="center center">
+                  <div class="day-of-week">
+                  {{dayOfWeek(date.date)}}
+                </div>
+                <div class="month-and-day">
+                  {{month(date.date)}} {{date.date.getDate()}}
+                </div>
+                <div class="year">
+                  {{date.date.getFullYear()}}
+                </div>
+                <div class="click-day" (click)="clickDay($event, date.date)" *ngIf="date.times.length > 0"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-card-content>      
+    </mat-card>
+    <mat-card *ngIf="locationIndex !== 'not selected' && dateSelected">
+      <mat-card-title>Select a Time</mat-card-title>
+      <mat-card-content>
+        <div class="select-time" fxLayout="column" fxLayoutGap="20px" fxLayoutAlign="start center">
+          <button mat-button class="time-of-day" *ngFor="let time of selectedDate.times">{{timeString(time)}}</button>
+        </div>      
+    </mat-card-content>
+  </mat-card>
+</div>

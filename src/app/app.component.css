@@ -1,0 +1,27 @@
+.chair-container {
+    box-shadow:inset -1px -1px gray;
+}
+.appointment-cell {
+    display: block;
+    position: relative;
+    min-width: 100px;
+    cursor: default;
+    box-shadow:inset 1px 1px gray;
+}
+
+div.time-cell {
+    display: block;
+    position: relative;
+    text-align: center;
+}
+
+span.time-cell {
+    font-size: 10px;
+    display: block;
+    position: relative;
+    top: -6px;
+}
+
+div {
+    text-rendering: geometricPrecision;
+}

@@ -1,0 +1,63 @@
+<mat-card>
+    <mat-card-title>Availability ({{months[data.date.getMonth()]}} {{data.date.getDate()}}, {{data.date.getFullYear()}})</mat-card-title>
+    <mat-card-content>
+        <div fxLayout="column" fxLayoutGap="0px">
+            <div fxLayout="row" fxLayoutGap="10px" *ngIf="data.intervals && data.intervals.length > 0">
+                <div style="width: 120px"><h3>Start time</h3></div>
+                <div style="width: 120px"><h3>End time</h3></div>
+            </div>
+            <div fxLayout="row" fxLayoutGap="10px" *ngFor="let interval of data.intervals; let index = index">
+                <mat-form-field style="width:120px">
+                    <input type="time" matInput [(ngModel)]="interval.start">
+                </mat-form-field>
+                <mat-form-field style="width:120px">
+                    <input type="time" matInput [(ngModel)]="interval.end">
+                </mat-form-field>
+                <mat-icon style="font-size: 16pt; padding-top: 15px; cursor: pointer" (click)="deleteInterval(index)">delete_outline</mat-icon>
+            </div>
+            <div fxLayout="column" fxLayoutGap="10px">
+                <button mat-button (click)="addInterval()"><mat-icon>add</mat-icon> New Interval</button>
+                <button [disabled]="!data.intervals" mat-stroked-button (click)="removeIntervals()">No Appointments</button>
+                <mat-form-field style="padding-top:20px">
+                    <mat-select (selectionChange)="applyToChanged()" [(ngModel)]="data.applyTo" placeholder="Apply to">
+                        <mat-option value="date">{{months[data.date.getMonth()]}} {{data.date.getDate()}} only</mat-option>
+                        <mat-option value="dayOfWeek">all {{daysOfWeek[data.date.getDay()]}}s</mat-option>
+                        <mat-option value="dates">specific dates</mat-option>
+                        <mat-option value="daysOfWeek">repeating days of the week</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <section *ngIf="data.applyTo === 'daysOfWeek'" fxLayout="column">
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.sun">Sundays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.mon">Mondays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.tue">Tuesdays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.wed">Wednesdays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.thu">Thursdays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.fri">Fridays</mat-checkbox>
+                    <mat-checkbox color="primary" [(ngModel)]="data.daysOfWeek.sat">Saturdays</mat-checkbox>
+                </section>
+                <section *ngIf="data.applyTo === 'dates'" fxLayout="column">
+                    <section *ngFor="let date of data.dates; let index = index" fxLayout="row">
+                        <mat-form-field fxFlex>
+                            <input matInput [(ngModel)]="data.dates[index]" [matDatepicker]="datePicker" [matDatepickerFilter]="dateFilter">
+                            <mat-datepicker-toggle matSuffix [for]="datePicker"></mat-datepicker-toggle>
+                            <mat-datepicker #datePicker></mat-datepicker>
+                        </mat-form-field>
+                        <div fxFlex>
+                            <mat-icon *ngIf="index > 0" style="float: right; font-size: 16pt; padding-top: 15px; cursor: pointer" (click)="removeDate(index)">delete_outline</mat-icon>
+                        </div>
+                    </section>
+                    <section fxLayout="column" fxLayoutGap="10px">
+                        <button mat-button (click)="addDate()"><mat-icon>add</mat-icon> New Date</button>
+                        <button mat-stroked-button (click)="removeDates()" [disabled]="data.dates.length === 1">Remove All but First</button>
+                    </section>
+                </section>
+            </div>
+        </div>
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button (click)="onCancelClick()">Cancel</button>
+        <button mat-button [mat-dialog-close]="data" [disabled]="!data.applyTo || (data.applyTo === 'daysOfWeek' && !atLeastOneDaySelected())">Apply</button>          
+    </mat-card-actions>
+
+</mat-card>
+

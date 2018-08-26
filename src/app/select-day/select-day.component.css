@@ -1,0 +1,67 @@
+.select-day {
+    width: 150px;
+    height: 150px;
+    border: 4px solid #00688B;
+    border-radius: 50%;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+    color: #00688B;
+    position: relative;
+}
+
+.select-day.selected {
+    border: 4px solid #66d9ff;
+}
+
+.select-day-disabled {
+    width: 150px;
+    height: 150px;
+    border: 4px solid #b3b3b3;
+    border-radius: 50%;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+    color: #b3b3b3;
+    position: relative;
+}
+
+.select-day:hover {
+    border: 4px solid #66d9ff;
+}
+
+.click-day {
+    position: absolute;
+    left: -1;
+    top: -1;
+    height: 100%;
+    width: 100%;
+    border: 1px solid transparent;
+    border-radius: 50%;
+}
+
+.click-day:hover {
+    cursor: pointer;
+}
+
+.day-of-week {
+    font-weight: bold;
+    padding-bottom: 5px;
+}
+
+.month-and-day {
+    font-weight: bold;
+    font-size: 200%;
+}
+
+.year {
+    padding-top: 5px;
+}
+
+.time-of-day {
+    font-size: 200%;
+    font-weight: normal;
+    font-family: Roboto,"Helvetica Neue",sans-serif;
+    width: 450px;
+    height: 75px;
+    border: 4px solid #00688B;
+    border-radius: 10px;
+    background-color:  #00688B;
+    color: snow;
+}

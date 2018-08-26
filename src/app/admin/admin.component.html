@@ -1,0 +1,118 @@
+<button mat-button (click)="addTab()">Add Location</button>
+<a href="/" style="float:right"><mat-icon>alarm</mat-icon></a>
+<mat-tab-group [selectedIndex]="selectedTab.value" (selectedIndexChange)="tabChanged($event)">
+  <mat-tab *ngFor="let event of events; let index = index" [label]="event.location + ' (' + event.chair + ')'">
+  </mat-tab>
+</mat-tab-group>
+<section fxLayout="column" fxLayoutGap="25px">
+  <div></div>
+  <mat-card [@tabChangedTrigger1]="bindingVar">
+    <mat-card-title>Location</mat-card-title>
+    <mat-card-content>
+      <div fxLayout="column" fxLayoutGap="15px">
+        <div fxLayout="row" fxLayoutGap="25px">
+          <mat-form-field>
+            <input matInput [(ngModel)]="events[selectedTab.value].location" placeholder="Location" (change)="saveEvents()">
+          </mat-form-field>
+          <mat-form-field>
+            <input matInput [(ngModel)]="events[selectedTab.value].chair" placeholder="Chair" (change)="saveEvents()">
+          </mat-form-field>        
+          <mat-form-field>
+            <input matInput type="tel" [(ngModel)]="events[selectedTab.value].phone" placeholder="Phone" (change)="saveEvents()">
+          </mat-form-field>        
+          <mat-form-field>
+            <textarea matInput [(ngModel)]="events[selectedTab.value].address" placeholder="Address" (change)="saveEvents()"></textarea>
+          </mat-form-field>
+        </div>
+        <div fxLayout="row" fxLayoutGap="25px">
+          <mat-form-field style="width: 150px">
+            <input matInput type="number" placeholder="Appt duration" [(ngModel)]="events[selectedTab.value].duration" (change)="saveEvents()">
+            <span matSuffix>minutes</span>
+          </mat-form-field>
+          <mat-form-field style="width: 500px">
+            <textarea matInput [(ngModel)]="events[selectedTab.value].instructions" placeholder="Instructions to patient" (change)="saveEvents()"></textarea>
+          </mat-form-field>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card [@tabChangedTrigger1]="bindingVar">
+      <mat-card-title>Availability Range</mat-card-title>
+      <mat-card-subtitle>Patients will see available appointment slots over this range.</mat-card-subtitle>
+    <mat-card-content>
+      <div fxLayout="column" fxLayoutAlign="start start">
+        <div fxLayout="row" fxLayoutGap="20px">
+          <mat-form-field style="width: 250px">
+            <mat-select [(value)]="events[selectedTab.value].dateRange" placeholder="Availability range" (selectionChange)="saveEvents()">
+              <mat-option value="rollingDays">Over a period of rolling days</mat-option>
+              <mat-option value="dateRange">Over a date range</mat-option>
+              <mat-option value="indefinitely">Indefinitely</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field *ngIf="events[selectedTab.value].dateRange === 'rollingDays'">
+            <input matInput [(ngModel)]="events[selectedTab.value].rollingDays" placeholder="Rolling days" type="number" (change)="saveEvents()">
+          </mat-form-field>
+          <div fxLayout = "row" fxLayoutGap = "20px" *ngIf="events[selectedTab.value].dateRange === 'dateRange'">
+            <mat-form-field>
+              <input matInput [(value)]="pickerStartDate" (dateChange)="startDateChanged($event)" [matDatepickerFilter]="pickerStartFilter" [matDatepicker]="startpicker" placeholder="Start date" (change)="saveEvents()">
+              <mat-datepicker-toggle matSuffix [for]="startpicker"></mat-datepicker-toggle>
+              <mat-datepicker #startpicker></mat-datepicker>
+            </mat-form-field>
+            <mat-form-field>
+              <input matInput [min]="startDate" [(value)]="pickerEndDate" (dateChange)="endDateChanged($event)" [matDatepickerFilter]="pickerEndFilter" [matDatepicker]="endpicker" placeholder="End date" (change)="saveEvents()">
+              <mat-datepicker-toggle matSuffix [for]="endpicker"></mat-datepicker-toggle>
+              <mat-datepicker #endpicker></mat-datepicker>
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>
+  <mat-card [@tabChangedTrigger1]="bindingVar">
+    <mat-card-title>Available Hours</mat-card-title>
+    <mat-card-subtitle>Days and time intervals for when new appointments may be scheduled.</mat-card-subtitle>
+    <mat-card-content>
+      <div class="availability-calendar">
+        <div class="calendar-grid">
+          <div class="calendar-header">
+            <h3>
+              <span>{{monthsInitialCap[events[selectedTab.value].startDate.getMonth()]}} {{events[selectedTab.value].startDate.getDate()}} - {{monthsInitialCap[endDate().getMonth()]}} {{endDate().getDate()}}, {{endDate().getFullYear()}}</span>
+              <div class="calendar-nav" fxLayout="row" fxLayoutGap="10px">
+                <button mat-icon-button (click)="backOneMonth()"><mat-icon>arrow_back_ios</mat-icon></button>
+                <button mat-icon-button (click)="forwardOneMonth()"><mat-icon>arrow_forward_ios</mat-icon></button>
+                  <input matInput [matDatepicker]="calendarPicker" style="width: 1px; visibility:hidden;" (dateChange)="calendarDateChange($event)">
+                  <mat-datepicker-toggle [for]="calendarPicker"></mat-datepicker-toggle>
+                  <mat-datepicker #calendarPicker></mat-datepicker>    
+              </div>
+            </h3>
+          </div>
+
+          <div fxLayout="row" fxLayoutGap="0" fxLayoutAlign="space-between stretch">
+            <div class="calendar-header-row" fxFlex *ngFor="let day of daysOfWeek">
+              <span class="mat-body-2">{{day}}</span>
+            </div>
+          </div>
+
+          <div *ngFor="let week of events[selectedTab.value].calendar; let weekIndex = index">
+            <div fxLayout="row" fxLayoutGap="0" fxLayoutAlign="spacebetween stretch">
+              <div class="calendar-day{{(i < 6) ? ' border-right' : ''}} border-top{{(weekIndex === 3) ? ' border-bottom': ''}}" fxFlex *ngFor="let day of week; let i = index;">
+                  <div class="calendar-day-click" (click)="dayClicked(day)"></div>
+                  <div class="day-label">{{(day.today) ? 'TODAY' : ((day.day === 1) ? month(day.date) + ' ' : '') + day.day}}</div>
+                  <div class="interval{{(day.repeats) ? ' interval-repeats' : ''}}" *ngIf="!day.beforeToday && day.available">
+                      <mat-icon style="float: right" *ngIf="day.repeats">autorenew</mat-icon>
+                      <div *ngFor="let interval of day.intervals">{{timeString(interval.start)}} - {{timeString(interval.end)}}</div>
+                  </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-card-content>
+  </mat-card>            
+  <mat-card [@tabChangedTrigger1]="bindingVar">
+    <mat-card-title>Scheduled Appointments</mat-card-title>
+    <mat-card-subtitle></mat-card-subtitle>
+    <mat-card-content>
+    </mat-card-content>
+  </mat-card>  
+</section>
